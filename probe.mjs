@@ -18,7 +18,7 @@ try {
   const t0 = Date.now();
   const resp = await page.goto(url, { waitUntil: 'commit', timeout: 45000 });
   rec.status = resp && resp.status();
-  rec.chromeVersion = await browser.version().catch(() => null);
+  try { rec.chromeVersion = String(browser.version()); } catch { rec.chromeVersion = null; }
   const timeline = [];
   let last = [];
   for (let i = 0; i < 20; i++) {
