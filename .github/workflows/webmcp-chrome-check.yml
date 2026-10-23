@@ -1,0 +1,48 @@
+name: webmcp-chrome-check
+
+# Manual, one-off check. No schedule. Each store runs as its own matrix
+# leg on a GitHub-hosted runner (GitHub IP space, real Google Chrome) so
+# legs are parallel and failures stay isolated per store.
+on:
+  workflow_dispatch: {}
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - slug: skullcandy
+            url: https://www.skullcandy.com/
+          - slug: tedbaker
+            url: https://www.tedbaker.com/
+          - slug: colehaan
+            url: https://www.colehaan.com/
+          - slug: perryellis
+            url: https://www.perryellis.com/
+          - slug: savannahbee
+            url: https://savannahbee.com/
+          - slug: control-jennifer
+            url: https://www.jennifertaylorhome.com/
+          - slug: control-cornerstone
+            url: https://cornerstone-light-demo.mybigcommerce.com/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Show Chrome version
+        run: google-chrome --version || google-chrome-stable --version
+      - name: Install probe dependency
+        run: npm install --no-audit --no-fund
+      - name: Probe (listing only, no tool is called)
+        run: node probe.mjs "${{ matrix.url }}" "results-${{ matrix.slug }}.json"
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-${{ matrix.slug }}
+          path: results-${{ matrix.slug }}.json
+          if-no-files-found: warn

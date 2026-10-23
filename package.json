@@ -1,0 +1,1 @@
+{"dependencies":{"playwright-core":"1.64.1"},"description":"One-off WebMCP tool-registration check in real Google Chrome: do Shopify storefront tools register where Edge showed none?","name":"webmcp-chrome-check","private":true,"type":"module","version":"0.1.0"}
